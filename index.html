@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cell ID Finder</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <div class="w-full max-w-md p-6 bg-white rounded-2xl shadow-lg">
+    <h2 class="text-2xl font-bold text-center mb-4">Cell ID Finder</h2>
+    <form id="cellForm" class="space-y-4">
+      <input type="text" id="latitude" placeholder="Enter Latitude" class="w-full p-2 border rounded-lg">
+      <input type="text" id="longitude" placeholder="Enter Longitude" class="w-full p-2 border rounded-lg">
+      <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">Get Cell ID</button>
+    </form>
+    <div id="result" class="mt-4 text-center"></div>
+  </div>
+
+  <script>
+    document.getElementById("cellForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      let lat = document.getElementById("latitude").value;
+      let lon = document.getElementById("longitude").value;
+      let apiKey = "YOUR_OPENCELLID_API_KEY"; // 🔑 Get from OpenCelliD
+
+      let url = `https://opencellid.org/cell/get?key=${apiKey}&lat=${lat}&lon=${lon}&format=json`;
+
+      try {
+        let response = await fetch(url);
+        let data = await response.json();
+        
+        if (data.error) {
+          document.getElementById("result").innerHTML = `<p class="text-red-500">Error: ${data.error}</p>`;
+        } else {
+          document.getElementById("result").innerHTML = `
+            <div class="p-4 bg-green-100 rounded-lg">
+              <p><b>Cell ID:</b> ${data.cellid}</p>
+              <p><b>LAC:</b> ${data.lac}</p>
+              <p><b>MCC:</b> ${data.mcc}</p>
+              <p><b>MNC:</b> ${data.mnc}</p>
+            </div>`;
+        }
+      } catch (err) {
+        document.getElementById("result").innerHTML = `<p class="text-red-500">API Request Failed!</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
